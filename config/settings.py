@@ -10,6 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 SECRET_KEY = env.str("SECRET_KEY")
+BOT_TOKEN = env.str("BOT_TOKEN")
 
 DEBUG = env.bool("DEBUG", default=False)
 
