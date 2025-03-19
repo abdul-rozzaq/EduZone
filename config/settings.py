@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     # External
     "rest_framework",
     "drf_yasg",
+    "django_filters",
     # Internal
     "users",
     "core",

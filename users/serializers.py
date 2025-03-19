@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import User
+from .models import User, Region, District
 
 
 class SendOTPSerializer(serializers.Serializer):
@@ -35,3 +35,17 @@ class UserSerializer(serializers.ModelSerializer):
             "is_active",
         ]
         read_only_fields = ["is_active", "score", "balance", "study_time", "phone"]
+
+
+class RegionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Region
+        fields = "__all__"
+
+
+class DistrictSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = District
+        fields = "__all__"
