@@ -99,7 +99,5 @@ class AuthViewSet(viewsets.GenericViewSet):
 
 def logout_page(request):
     next = request.GET.get("next", "/")
-
     logout(request)
-
     return redirect(next)
