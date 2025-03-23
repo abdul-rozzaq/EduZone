@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Course, Level, Topic, Lesson, QuizQuestion, QuizAnswer, CoursePurchase
+from .models import Course, Level, Topic, Lesson, QuizQuestion, QuizAnswer, LevelPurchase
 
 
 class LevelInline(admin.TabularInline):
@@ -25,9 +25,8 @@ class QuizAnswerInline(admin.TabularInline):
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ("name", "price", "image_preview")
+    list_display = ("name", "image_preview")
     search_fields = ("name",)
-    list_filter = ("price",)
     inlines = [LevelInline]
 
     def image_preview(self, obj):
@@ -40,9 +39,9 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(Level)
 class LevelAdmin(admin.ModelAdmin):
-    list_display = ("name", "course")
+    list_display = ("name", "course", "price")
     search_fields = ("name", "course__name")
-    list_filter = ("course",)
+    list_filter = ("course", "price")
     inlines = [TopicInline]
 
 
@@ -106,12 +105,12 @@ class QuizAnswerAdmin(admin.ModelAdmin):
     image_preview.short_description = "Image"
 
 
-@admin.register(CoursePurchase)
-class CoursePurchaseAdmin(admin.ModelAdmin):
-    list_display = ("user", "course", "purchased_at")
-    list_filter = ("user", "course")
+@admin.register(LevelPurchase)
+class LevelPurchaseAdmin(admin.ModelAdmin):
+    list_display = ("user", "level", "purchased_at")
+    list_filter = ("user", "level")
 
-    
+
 # @admin.register(UserAnswer)
 # class UserAnswerAdmin(admin.ModelAdmin):
 #     list_display = ("user", "question", "selected_answer", "is_correct", "time_spent")

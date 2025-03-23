@@ -15,7 +15,7 @@ class Course(models.Model):
     name = models.CharField(max_length=256)
     image = models.ImageField(upload_to="course-images/")
     intro = models.FileField(validators=[validate_video_file], upload_to="course-intro-videos/")
-    price = models.IntegerField()
+    description = models.TextField(blank=True, default="")
 
     def __str__(self):
         return self.name
@@ -25,6 +25,7 @@ class Level(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     course = models.ForeignKey("Course", on_delete=models.CASCADE, related_name="levels")
     name = models.CharField(max_length=256)
+    price = models.IntegerField()
 
     def __str__(self):
         return f"{self.course.name} - {self.name}"
@@ -100,10 +101,10 @@ class FavoriteCourse(models.Model):
         return f"{self.user.username} - {self.course.name}"
 
 
-class CoursePurchase(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="purchased_courses")
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="purchases")
+class LevelPurchase(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="purchased_levels")
+    level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name="purchases")
     purchased_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.get_full_name()} - {self.course.name}"
+        return f"{self.user.get_full_name()} - {self.level.name}"
