@@ -5,7 +5,23 @@ from .models import Course, Level, Topic, Lesson, QuizQuestion, QuizAnswer, User
 User = get_user_model()
 
 
+class QuizAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuizAnswer
+        exclude = ["is_correct"]
+
+
+class QuizQuestionSerializer(serializers.ModelSerializer):
+    answers = QuizAnswerSerializer(many=True)
+
+    class Meta:
+        model = QuizQuestion
+        fields = "__all__"
+
+
 class LessonSerializer(serializers.ModelSerializer):
+    quiz_questions = QuizQuestionSerializer(many=True)
+
     class Meta:
         model = Lesson
         fields = "__all__"
@@ -44,7 +60,7 @@ class LevelSerializer(serializers.ModelSerializer):
 
         return self._user_purchased_cache[obj.id]
 
-    def get_levels(self, obj):
+    def get_topics(self, obj):
         user = self.context.get("request").user
         is_purchased = self._get_user_purchased_status(obj)
 
@@ -55,7 +71,7 @@ class LevelSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    levels = LessonSerializer(many=True)
+    levels = LevelSerializer(many=True)
     is_favorite = serializers.SerializerMethodField()
 
     class Meta:
@@ -65,18 +81,6 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_is_favorite(self, obj):
         user = self.context.get("request").user
         return FavoriteCourse.objects.filter(user=user, course=obj).exists()
-
-
-class QuizQuestionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = QuizQuestion
-        fields = "__all__"
-
-
-class QuizAnswerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = QuizAnswer
-        fields = "__all__"
 
 
 class UserAnswerSerializer(serializers.ModelSerializer):

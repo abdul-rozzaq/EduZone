@@ -7,8 +7,8 @@ from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Course, FavoriteCourse
-from .serializers import CourseSerializer, FavoriteCourseSerializer
+from .models import Course, FavoriteCourse, Lesson, Level
+from .serializers import CourseSerializer, FavoriteCourseSerializer, LessonSerializer, LevelSerializer
 from .filters import CourseFilter, DistrictFilter
 
 from users.models import Region, District
@@ -75,3 +75,13 @@ class DistrictViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Ret
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+
+class LevelDetailViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+    serializer_class = LevelSerializer
+    queryset = Level.objects.all()
+
+
+class LessonDetailViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+    serializer_class = LessonSerializer
+    queryset = Lesson.objects.all()

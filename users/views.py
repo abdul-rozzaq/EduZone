@@ -48,10 +48,10 @@ class AuthViewSet(viewsets.GenericViewSet):
             otp = OTP.objects.get(user=user, code=code)
 
         except (User.DoesNotExist, OTP.DoesNotExist):
-            return Response({"detail": "Telefon raqami yoki OTP kodi noto'g'ri."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Telefon raqami yoki SMS kodi noto'g'ri."}, status=status.HTTP_400_BAD_REQUEST)
 
         if otp.is_expired():
-            return Response({"detail": "OTP kodi muddati tugagan."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "SMS kodi muddati tugagan."}, status=status.HTTP_400_BAD_REQUEST)
 
         otp.delete()
 
