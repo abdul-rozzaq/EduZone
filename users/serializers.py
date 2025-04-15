@@ -36,6 +36,14 @@ class UserSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["is_active", "score", "balance", "study_time", "phone"]
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        
+        data["region"] = RegionSerializer(instance.region).data
+        data["district"] = DistrictSerializer(instance.district).data
+
+        return data
+
 
 class RegionSerializer(serializers.ModelSerializer):
 
