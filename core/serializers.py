@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Course, Level, Topic, Lesson, QuizQuestion, QuizAnswer, UserAnswer, Leaderboard, FavoriteCourse, LevelPurchase
 
+import random
+
 User = get_user_model()
 
 
@@ -29,15 +31,21 @@ class LessonSerializer(serializers.ModelSerializer):
 
 class TopicSerializer(serializers.ModelSerializer):
     lessons = LessonSerializer(many=True)
+    completion_percentage = serializers.SerializerMethodField()
 
     class Meta:
         model = Topic
         fields = "__all__"
 
+    def get_completion_percentage(self, obj):
+        return random.randint(0, 100)
+
 
 class LevelSerializer(serializers.ModelSerializer):
     topics = serializers.SerializerMethodField()
     is_purchased = serializers.SerializerMethodField()
+    lesson_count = serializers.SerializerMethodField()
+    completion_percentage = serializers.SerializerMethodField()
 
     class Meta:
         model = Level
@@ -68,6 +76,12 @@ class LevelSerializer(serializers.ModelSerializer):
             return TopicSerializer(obj.topics.all(), many=True, context={"request": self.context.get("request")}).data
 
         return []
+
+    def get_lesson_count(self, obj):
+        return Lesson.objects.filter(topic__level=obj).count()
+
+    def get_completion_percentage(self, obj):
+        return random.randint(0, 100)
 
 
 class CourseSerializer(serializers.ModelSerializer):

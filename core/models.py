@@ -23,6 +23,7 @@ class Course(models.Model):
 
 class Level(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    image = models.ImageField("Level Image", upload_to="level-images/")
     course = models.ForeignKey("Course", on_delete=models.CASCADE, related_name="levels")
     name = models.CharField(max_length=256)
     price = models.IntegerField()
@@ -44,7 +45,7 @@ class Lesson(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="lessons")
     title = models.CharField(max_length=256)
-    video = models.FileField(upload_to="lesson-videos/", validators=[validate_video_file])
+    video_url = models.URLField()
 
     def __str__(self):
         return f"{self.topic.name} - {self.title}"
