@@ -1,28 +1,14 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Course, Level, Topic, Lesson, QuizQuestion, QuizAnswer, UserAnswer, Leaderboard, FavoriteCourse, LevelPurchase
+from .models import Course, Level, Topic, Lesson,  Leaderboard, FavoriteCourse, LevelPurchase
 
 import random
 
 User = get_user_model()
 
 
-class QuizAnswerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = QuizAnswer
-        exclude = ["is_correct"]
-
-
-class QuizQuestionSerializer(serializers.ModelSerializer):
-    answers = QuizAnswerSerializer(many=True)
-
-    class Meta:
-        model = QuizQuestion
-        fields = "__all__"
-
-
 class LessonSerializer(serializers.ModelSerializer):
-    quiz_questions = QuizQuestionSerializer(many=True)
+    # quiz_questions = QuizQuestionSerializer(many=True)
 
     class Meta:
         model = Lesson
@@ -96,11 +82,6 @@ class CourseSerializer(serializers.ModelSerializer):
         user = self.context.get("request").user
         return FavoriteCourse.objects.filter(user=user, course=obj).exists()
 
-
-class UserAnswerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserAnswer
-        fields = "__all__"
 
 
 class LeaderboardSerializer(serializers.ModelSerializer):

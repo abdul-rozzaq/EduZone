@@ -28,9 +28,11 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_yasg",
     "django_filters",
+    "nested_admin",
     # Internal
     "users",
     "core",
+    "quiz",
 ]
 
 MIDDLEWARE = [
