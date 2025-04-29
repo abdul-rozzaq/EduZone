@@ -12,11 +12,11 @@ class QuizViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
 
     @action(["POST"], detail=True, serializer_class=UserAnswerSheetSerializer)
     def solve(self, request, *args, **kwargs):
+        quiz = self.get_object()
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        print(serializer.data)
+        serializer.save(quiz=quiz)
 
         return Response(serializer.data)
 

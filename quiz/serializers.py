@@ -17,6 +17,15 @@ class QuizQuestionSerializer(serializers.ModelSerializer):
         model = QuizQuestion
         fields = "__all__"
 
+    def __init__(self, *args, **kwargs):
+        exclude_fields = kwargs.pop("exclude_fields", None)
+
+        super().__init__(*args, **kwargs)
+
+        if exclude_fields:
+            for field in exclude_fields:
+                self.fields.pop(field)
+
 
 class QuizSerializer(serializers.ModelSerializer):
     questions = QuizQuestionSerializer(many=True)
@@ -28,19 +37,25 @@ class QuizSerializer(serializers.ModelSerializer):
 
 class UserAnswerSerializer(serializers.ModelSerializer):
     answer_sheet = serializers.PrimaryKeyRelatedField(read_only=True)
-    is_correct = serializers.SerializerMethodField()
+    is_correct = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = UserAnswer
         fields = "__all__"
 
-    def get_is_correct(self, obj):
-        return obj.selected_answer.is_correct and obj.question == obj.selected_answer.question
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        data["question"] = QuizQuestionSerializer(instance.question, exclude_fields=["answers"], context={"request": self.context.get("request")}).data
+        data["selected_answer"] = QuizAnswerSerializer(instance.selected_answer, context={"request": self.context.get("request")}).data
+
+        return data
 
 
 class UserAnswerSheetSerializer(serializers.ModelSerializer):
     answers = UserAnswerSerializer(many=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    quiz = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = UserAnswerSheet
@@ -51,7 +66,20 @@ class UserAnswerSheetSerializer(serializers.ModelSerializer):
 
         answer_sheet = super().create(validated_data)
 
-        for ans in answers:
-            UserAnswer.objects.create(**ans, answer_sheet=answer_sheet)
+        answers = [UserAnswer(**ans, answer_sheet=answer_sheet) for ans in answers]
+
+        UserAnswer.objects.bulk_create(answers)
 
         return answer_sheet
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        correct_answers = instance.answers.filter(is_correct=True).count()
+
+        total_questions = instance.quiz.questions.count()
+
+        data["correct_answers"] = correct_answers
+        data["wrong_answers"] = total_questions - correct_answers
+
+        return data

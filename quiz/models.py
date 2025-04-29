@@ -1,6 +1,8 @@
 import uuid
 
 from django.db import models
+from rest_framework.exceptions import ValidationError
+
 
 from core.models import Lesson
 from users.models import User
@@ -50,6 +52,15 @@ class UserAnswer(models.Model):
     answer_sheet = models.ForeignKey(UserAnswerSheet, on_delete=models.CASCADE, related_name="answers")
     question = models.ForeignKey(QuizQuestion, on_delete=models.CASCADE, related_name="user_answers")
     selected_answer = models.ForeignKey(QuizAnswer, on_delete=models.CASCADE, related_name="user_selected_answers")
+    is_correct = models.BooleanField("Is Correct", default=False)
 
     def __str__(self):
         return f"{self.question.text[:30] if self.question.text else 'Image Question'} - {'Correct' if self.selected_answer.is_correct else 'Wrong'}"
+
+    def save(self, *args, **kwargs):
+        self.is_correct = self.selected_answer.is_correct
+
+        if self.selected_answer.question != self.question:
+            raise ValidationError("The question and the question of the selected answer must be the same")
+
+        return super().save(*args, **kwargs)
