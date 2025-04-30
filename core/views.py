@@ -6,16 +6,17 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 
-from .models import Course, FavoriteCourse, Lesson, Level
-from .serializers import CourseSerializer, FavoriteCourseSerializer, LessonSerializer, LevelSerializer
+from .models import Course, FavoriteCourse, Lesson, Level, Topic, LevelPurchase
+from .serializers import CourseSerializer, FavoriteCourseSerializer, LessonSerializer, LevelSerializer, TopicSerializer
 from .filters import CourseFilter, DistrictFilter
 
 from users.models import Region, District
 from users.serializers import RegionSerializer, DistrictSerializer
 
 
-class CourseViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+class CourseViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     filterset_class = CourseFilter
@@ -56,12 +57,12 @@ class CourseViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retri
         return super().list(request, *args, **kwargs)
 
 
-class RegionViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+class RegionViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
 
 
-class DistrictViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+class DistrictViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
     filterset_class = DistrictFilter
@@ -77,11 +78,28 @@ class DistrictViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Ret
         return super().list(request, *args, **kwargs)
 
 
-class LevelDetailViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+class LevelDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = LevelSerializer
     queryset = Level.objects.all()
 
 
-class LessonDetailViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+class LessonDetailViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+
+
+class TopicViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Topic.objects.all()
+    serializer_class = TopicSerializer
+
+    def get_object(self):
+        obj = super().get_object()
+        user = self.request.user
+
+        level_purchase = LevelPurchase.objects.filter(user=user, level=obj.level).exists()
+
+        if level_purchase or user.is_staff or user.is_superuser:
+            return obj
+        
+
+        raise PermissionDenied()

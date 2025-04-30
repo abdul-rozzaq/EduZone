@@ -1,14 +1,19 @@
-from rest_framework import serializers
-from django.contrib.auth import get_user_model
-from .models import Course, Level, Topic, Lesson,  Leaderboard, FavoriteCourse, LevelPurchase
-
 import random
+
+from quiz.serializers import QuizSerializer
+
+from rest_framework import serializers
+
+from django.contrib.auth import get_user_model
+
+from .models import Course, Level, Topic, Lesson, Leaderboard, FavoriteCourse, LevelPurchase
+
 
 User = get_user_model()
 
 
 class LessonSerializer(serializers.ModelSerializer):
-    # quiz_questions = QuizQuestionSerializer(many=True)
+    quizs = QuizSerializer(many=True)
 
     class Meta:
         model = Lesson
@@ -22,6 +27,15 @@ class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
         fields = "__all__"
+
+    def __init__(self, instance=None, *args, **kwargs):
+        exclude_fields = kwargs.pop("exclude_fields", None)
+
+        super().__init__(instance, *args, **kwargs)
+
+        if exclude_fields:
+            for field in exclude_fields:
+                self.fields.pop(field)
 
     def get_completion_percentage(self, obj):
         return random.randint(0, 100)
@@ -59,7 +73,7 @@ class LevelSerializer(serializers.ModelSerializer):
         is_purchased = self._get_user_purchased_status(obj)
 
         if is_purchased or user.is_staff or user.is_superuser:
-            return TopicSerializer(obj.topics.all(), many=True, context={"request": self.context.get("request")}).data
+            return TopicSerializer(obj.topics.all(), many=True, context={"request": self.context.get("request")}, exclude_fields=["lessons"]).data
 
         return []
 
@@ -81,7 +95,6 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_is_favorite(self, obj):
         user = self.context.get("request").user
         return FavoriteCourse.objects.filter(user=user, course=obj).exists()
-
 
 
 class LeaderboardSerializer(serializers.ModelSerializer):

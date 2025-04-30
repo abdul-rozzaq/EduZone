@@ -10,7 +10,7 @@ from users.models import User
 
 class Quiz(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="quiz_questions")
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="quizs")
     name = models.CharField(max_length=256)
     created_at = models.DateTimeField(auto_now_add=True)
 
