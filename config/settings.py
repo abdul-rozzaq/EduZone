@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "users",
     "core",
     "quiz",
+    "payment",
 ]
 
 MIDDLEWARE = [
@@ -69,6 +70,9 @@ REST_FRAMEWORK = {
 
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
+        "Basic": {
+            "type": "basic",
+        },
         "Token": {
             "type": "apiKey",
             "name": "Authorization",
@@ -77,6 +81,7 @@ SWAGGER_SETTINGS = {
     },
     "LOGOUT_URL": "/api/v1/auth/logout/",
     "LOGIN_URL": "/api/v1/auth/login/",
+    "DOC_EXPANSION": "none",
 }
 
 
@@ -142,3 +147,24 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 STATIC_ROOT = BASE_DIR / "static"
+
+
+# Click API settings
+
+BASE_URL = "https://api.click.uz/v2/merchant/card_token"
+CREATE_TOKEN_URL = f"{BASE_URL}/request"
+VERIFY_TOKEN_URL = f"{BASE_URL}/verify"
+PAYMENT_TOKEN_URL = f"{BASE_URL}/payment"
+
+
+CLICK_SERVICE_ID = env.int("CLICK_SERVICE_ID")
+CLICK_MERCHANT_ID = env.int("CLICK_MERCHANT_ID")
+CLICK_SECRET_KEY = env.str("CLICK_SECRET_KEY")
+CLICK_MERCHANT_USER_ID = env.int("CLICK_MERCHANT_USER_ID")
+
+CLICK_ACCOUNT_MODEL = "bot.models.Payment"
+CLICK_AMOUNT_FIELD = "amount"
+
+
+TEST_CARD_NUMBERS = env.list("TEST_CARD_NUMBERS", subcast=str)
+TEST_CARD_EXPIRY = env.list("TEST_CARD_EXPIRY", subcast=str)
