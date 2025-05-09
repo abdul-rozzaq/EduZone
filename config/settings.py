@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "django_filters",
     "nested_admin",
+    "rest_framework_simplejwt.token_blacklist",
     # Internal
     "users",
     "core",
