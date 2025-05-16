@@ -13,6 +13,7 @@ class Quiz(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="quizs")
     name = models.CharField(max_length=256)
     created_at = models.DateTimeField(auto_now_add=True)
+    xp = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
