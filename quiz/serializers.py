@@ -53,7 +53,7 @@ class UserAnswerSerializer(serializers.ModelSerializer):
 
 
 class UserAnswerSheetSerializer(serializers.ModelSerializer):
-    # answers = UserAnswerSerializer(many=True)
+    answers = UserAnswerSerializer(many=True, read_only=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     quiz = serializers.PrimaryKeyRelatedField(read_only=True)
 
