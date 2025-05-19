@@ -53,7 +53,7 @@ class UserAnswerSerializer(serializers.ModelSerializer):
 
 
 class UserAnswerSheetSerializer(serializers.ModelSerializer):
-    answers = UserAnswerSerializer(many=True, read_only=True)
+    answers = UserAnswerSerializer(many=True, write_only=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     quiz = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -75,10 +75,18 @@ class UserAnswerSheetSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
 
-        total_questions = instance.quiz.questions.count()
+        answers = instance.answers.all()
 
+        total_questions = instance.quiz.questions.count()
+        
+        for i in answers:
+            print(i.is_correct)
+        
         correct_answers = instance.answers.filter(is_correct=True).count()
         wrong_answers = instance.answers.filter(is_correct=False).count()
+
+        # print(correct_answers, wrong_answers)
+        # print(instance.answers.all().filter(is_correct=True))
 
         data["total_questions"] = total_questions
         data["correct_answers"] = correct_answers
