@@ -66,27 +66,23 @@ class UserAnswerSheetSerializer(serializers.ModelSerializer):
 
         answer_sheet = super().create(validated_data)
 
-        answers = [UserAnswer(**ans, answer_sheet=answer_sheet) for ans in answers]
+        try:
+            for ans in answers:
+                UserAnswer.objects.create(**ans, answer_sheet=answer_sheet)
 
-        UserAnswer.objects.bulk_create(answers)
+        except Exception as e:
+            answer_sheet.delete()
+            raise serializers.ValidationError({"answers": "Invalid answers provided.", "error": str(e)})
 
         return answer_sheet
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
 
-        answers = instance.answers.all()
-
         total_questions = instance.quiz.questions.count()
-        
-        for i in answers:
-            print(i.is_correct)
-        
+
         correct_answers = instance.answers.filter(is_correct=True).count()
         wrong_answers = instance.answers.filter(is_correct=False).count()
-
-        # print(correct_answers, wrong_answers)
-        # print(instance.answers.all().filter(is_correct=True))
 
         data["total_questions"] = total_questions
         data["correct_answers"] = correct_answers
