@@ -1,7 +1,8 @@
 from django.db.models import Count
-
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+
+from django.shortcuts import render
 
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
@@ -103,3 +104,7 @@ class TopicViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         
 
         raise PermissionDenied()
+
+
+def home_page(request):
+    return render(request, 'index.html', {})

@@ -89,7 +89,7 @@ SWAGGER_SETTINGS = {
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -138,17 +138,18 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = "static/"
-
 AUTH_USER_MODEL = "users.User"
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "public"
 
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Click API settings
 
