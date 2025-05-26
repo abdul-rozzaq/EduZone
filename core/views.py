@@ -8,6 +8,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import AllowAny
 
 from .models import Course, FavoriteCourse, Lesson, Level, Topic, LevelPurchase
 from .serializers import CourseSerializer, FavoriteCourseSerializer, LessonSerializer, LevelSerializer, TopicSerializer
@@ -61,6 +62,7 @@ class CourseViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.G
 class RegionViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
+    permission_classes = [AllowAny]
 
 
 class DistrictViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -68,6 +70,7 @@ class DistrictViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets
     serializer_class = DistrictSerializer
     filterset_class = DistrictFilter
     search_fields = ["name"]
+    permission_classes = [AllowAny]
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -101,10 +104,9 @@ class TopicViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         if level_purchase or user.is_staff or user.is_superuser:
             return obj
-        
 
         raise PermissionDenied()
 
 
 def home_page(request):
-    return render(request, 'index.html', {})
+    return render(request, "index.html", {})
