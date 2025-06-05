@@ -18,6 +18,8 @@ class CreatePaymentSerializer(serializers.Serializer):
     card_number = serializers.CharField(max_length=16)
     card_expiry = serializers.CharField(max_length=5)
 
+    promocode = serializers.CharField(required=False)
+
 
 class VerifyPaymentSerializer(serializers.Serializer):
     sms_code = serializers.CharField(max_length=6)

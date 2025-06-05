@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "django_filters",
     "nested_admin",
     "rest_framework_simplejwt.token_blacklist",
+    "click_up",
     # Internal
     "users",
     "core",
@@ -164,7 +165,7 @@ CLICK_MERCHANT_ID = env.int("CLICK_MERCHANT_ID")
 CLICK_SECRET_KEY = env.str("CLICK_SECRET_KEY")
 CLICK_MERCHANT_USER_ID = env.int("CLICK_MERCHANT_USER_ID")
 
-CLICK_ACCOUNT_MODEL = "bot.models.Payment"
+CLICK_ACCOUNT_MODEL = "payment.models.Payment"
 CLICK_AMOUNT_FIELD = "amount"
 
 

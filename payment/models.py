@@ -5,10 +5,29 @@ from django.db import models
 from core.models import Level, LevelPurchase
 from users.models import User
 
+from django.utils import timezone
+
+
+class Promocode(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    code = models.CharField(max_length=128, unique=True, db_index=True)
+    discount = models.DecimalField(max_digits=10, decimal_places=2)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_valid(self):
+        """Promo kod hali ham amal qilayotganini qaytaradi"""
+        if self.expires_at:
+            return timezone.now() < self.expires_at
+        return True
+
+    def __str__(self):
+        return self.code
+
 
 class Payment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
+    promocode = models.ForeignKey(Promocode, on_delete=models.PROTECT, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     level = models.ForeignKey(Level, on_delete=models.CASCADE)
 

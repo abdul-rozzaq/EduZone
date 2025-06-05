@@ -12,11 +12,13 @@ logger = logging.getLogger(__name__)
 
 def get_digest():
     timestamp = str(int(time.time()))
+    print(settings.CLICK_SECRET_KEY)
     digest = hashlib.sha1(f"{timestamp}{settings.CLICK_SECRET_KEY}".encode()).hexdigest()
     return digest, timestamp
 
 
 def make_request(url, headers, payload):
+    print(payload)
     try:
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
@@ -95,4 +97,3 @@ def mask_card(card_number: str) -> str:
     if len(card_number) != 16 or not card_number.isdigit():
         raise ValueError("Karta raqami 16 xonali bo'lishi kerak")
     return card_number[:4] + "*" * 8 + card_number[-4:]
-
