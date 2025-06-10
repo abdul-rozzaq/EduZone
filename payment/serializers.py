@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.models import Course, Level
+from core.models import Level
 from .models import Payment
 
 
