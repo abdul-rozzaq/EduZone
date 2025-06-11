@@ -171,3 +171,7 @@ CLICK_AMOUNT_FIELD = "amount"
 
 TEST_CARD_NUMBERS = env.list("TEST_CARD_NUMBERS", subcast=str)
 TEST_CARD_EXPIRY = env.list("TEST_CARD_EXPIRY", subcast=str)
+
+
+OTP_EMAIL = env.str("OTP_EMAIL", default="TEST")
+OTP_PASSWORD = env.str("OTP_PASSWORD", default="TEST")

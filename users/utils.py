@@ -1,26 +1,18 @@
-from django.utils.timezone import localtime, now
 from django.conf import settings
-from datetime import timedelta
-
-import telebot
+from eskiz.client.sync import ClientSync
 
 
 def send_otp_code(number: str, code: int):
-    if settings.DEBUG:
+    if settings.DEBUG or settings.TESTING:
         return print(f"{number}: {code}")
 
-    bot = telebot.TeleBot(settings.BOT_TOKEN)
-
-    expired_at = (localtime(now()) + timedelta(minutes=5)).strftime("%H:%M")
-
-    message = (
-        "🔔 <b>Telefon raqami uchun tasdiqlash kodi:</b>\n\n"
-        f"📞 <b>Telefon:</b> <code>{number}</code>\n"
-        f"🔓 <b>Kod:</b> <code>{code}</code>\n"
-        f"⏳ <b>Yaroqlilik muddati:</b> <code>{expired_at}</code>\n\n"
-        "ℹ️ Iltimos, kodni hech kim bilan ulashmang!"
+    eskiz_client = ClientSync(
+        email=settings.OTP_EMAIL,
+        password=settings.OTP_PASSWORD,
     )
 
-    bot.send_message("-1002354764356", message, message_thread_id=236, parse_mode="HTML")
+    text = "EduZone uchun tasdiqlash kodi: %s" % code
 
-    print(f"Kod yuborildi: {number} -> {code}")
+    resp = eskiz_client.send_sms(phone_number=int(number[1:]), message=text)
+
+    return resp

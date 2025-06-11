@@ -1,13 +1,16 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny
 
-from payment.models import Payment
-from payment.serializers import CreatePaymentSerializer, VerifyPaymentSerializer
+from payment.models import Payment, Promocode
+from payment.serializers import CheckPromocodeSerializer, CreatePaymentSerializer, PromocodeSerializer, VerifyPaymentSerializer
 from payment.payment_utils import create_card_token, verify_token, payment_with_token
 
 from click_up.views import ClickWebhook
+from click_up.typing.request import ClickShopApiRequest
 
 
 class PaymentViewSet(GenericViewSet):
@@ -19,6 +22,9 @@ class PaymentViewSet(GenericViewSet):
 
         elif self.action == "verify_payment":
             return VerifyPaymentSerializer
+
+        elif self.action == "check_promocode":
+            return CheckPromocodeSerializer
 
         return super().get_serializer_class()
 
@@ -66,14 +72,14 @@ class PaymentViewSet(GenericViewSet):
         sms_code = serializer.validated_data["sms_code"]
 
         status_code, response = verify_token(payment.token, sms_code)
-
         error_code = response.get("error_code")
 
         if status_code != 200 or error_code != 0:
             return Response({"error": "Tokenni tasdiqlashda xatolik"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            status_code, response = payment_with_token(payment.token, payment.level.price, payment_id=1)
+            status_code, response = payment_with_token(payment.token, payment.level.price, payment_id=str(payment.id))
+            error_code = response.get("error_code")
 
         except Exception:
             return Response({"error": "To'lovni amalga oshirishda xatolik"}, status=status.HTTP_400_BAD_REQUEST)
@@ -86,9 +92,28 @@ class PaymentViewSet(GenericViewSet):
 
         return Response({"message": "To'lov tasdiqlandi"}, status=200)
 
+    @action(methods=["POST"], detail=False, url_path="check-promocode")
+    def check_promocode(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        code = serializer.validated_data["code"]
+
+        promocode = get_object_or_404(Promocode, code=code)
+
+        is_exist = Payment.objects.filter(promocode=promocode, user=request.user).exists()
+
+        if not is_exist:
+            serializer = PromocodeSerializer(promocode, context={"request": request})
+            return Response(serializer.data)
+
+        return Response({"detail": "Promocode allaqachon ishlatilgan"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ClickWebhookAPIView(ClickWebhook):
-    def successfully_payment(self, params):
+    permission_classes = [AllowAny]
+
+    def successfully_payment(self, params: ClickShopApiRequest):
         """
         successfully payment method process you can ovveride it
         """

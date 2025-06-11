@@ -1,6 +1,3 @@
-import random
-
-
 from django.shortcuts import redirect
 from django.contrib.auth import logout
 
@@ -83,7 +80,7 @@ class AuthViewSet(viewsets.GenericViewSet):
         except User.DoesNotExist:
             return Response({"detail": "Foydalanuvchi topilmadi."}, status=status.HTTP_400_BAD_REQUEST)
 
-        except Exception as e:
+        except Exception:
             return Response({"detail": "Noto'g'ri yoki muddati tugagan token."}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(["POST"], detail=False, url_path="sign-up", url_name="sign_up", permission_classes=[permissions.IsAuthenticated], parser_classes=[parsers.FormParser, parsers.MultiPartParser])

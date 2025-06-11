@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from core.models import Level
-from .models import Payment
+from .models import Payment, Promocode
 
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -18,8 +18,19 @@ class CreatePaymentSerializer(serializers.Serializer):
     card_number = serializers.CharField(max_length=16)
     card_expiry = serializers.CharField(max_length=5)
 
-    promocode = serializers.CharField(required=False)
+    promocode = serializers.PrimaryKeyRelatedField(queryset=Promocode.objects.all())
 
 
 class VerifyPaymentSerializer(serializers.Serializer):
     sms_code = serializers.CharField(max_length=6)
+
+
+class CheckPromocodeSerializer(serializers.Serializer):
+    current_user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    code = serializers.CharField()
+
+
+class PromocodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Promocode
+        fields = "__all__"

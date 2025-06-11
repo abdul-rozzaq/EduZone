@@ -26,7 +26,6 @@ class Promocode(models.Model):
 
 
 class Payment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     promocode = models.ForeignKey(Promocode, on_delete=models.PROTECT, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     level = models.ForeignKey(Level, on_delete=models.CASCADE)
