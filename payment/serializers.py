@@ -18,7 +18,7 @@ class CreatePaymentSerializer(serializers.Serializer):
     card_number = serializers.CharField(max_length=16)
     card_expiry = serializers.CharField(max_length=5)
 
-    promocode = serializers.PrimaryKeyRelatedField(queryset=Promocode.objects.all())
+    promocode = serializers.PrimaryKeyRelatedField(queryset=Promocode.objects.all(), required=False)
 
 
 class VerifyPaymentSerializer(serializers.Serializer):
