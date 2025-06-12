@@ -75,17 +75,17 @@ class PaymentViewSet(GenericViewSet):
         error_code = response.get("error_code")
 
         if status_code != 200 or error_code != 0:
-            return Response({"error": "Tokenni tasdiqlashda xatolik"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Tokenni tasdiqlashda xatolik", "detail": response}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             status_code, response = payment_with_token(payment.token, payment.level.price, payment_id=str(payment.id))
             error_code = response.get("error_code")
 
-        except Exception:
-            return Response({"error": "To'lovni amalga oshirishda xatolik"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": "To'lovni amalga oshirishda xatolik", "detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         if status_code != 200 or error_code != 0:
-            return Response({"error": "To'lovni amalga oshirishda xatolik"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "To'lovni amalga oshirishda xatolik", "detail": response}, status=status.HTTP_400_BAD_REQUEST)
 
         payment.confirm()
         payment.create_purchase()
