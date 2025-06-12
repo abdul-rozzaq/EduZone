@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from environs import Env
 from datetime import timedelta
@@ -144,13 +145,21 @@ AUTH_USER_MODEL = "users.User"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-STATIC_URL = "static/"
-STATIC_ROOT = "/home/eduzonel/public_html/static/"
+PUBLIC_BASE_DIR = "home/eduzonel/public_html"
 
+
+STATIC_URL = "static/"
 MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+
+if DEBUG:
+    MEDIA_ROOT = BASE_DIR / "media"
+else:
+    MEDIA_ROOT = os.path.join(PUBLIC_BASE_DIR, "media")
+
+STATIC_ROOT = os.path.join(PUBLIC_BASE_DIR, "static")
 
 # Click API settings
 
