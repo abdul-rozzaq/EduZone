@@ -2,6 +2,7 @@ annotated-types==0.7.0
 asgiref==3.8.1
 certifi==2025.1.31
 charset-normalizer==3.4.1
+click-pkg==0.14
 Django==5.1.7
 django-filter==25.1
 django-nested-admin==4.1.1
@@ -15,6 +16,7 @@ inflection==0.5.1
 marshmallow==3.26.1
 packaging==24.2
 pillow==11.2.1
+psycopg2-binary==2.9.10
 pydantic==2.10.6
 pydantic_core==2.27.2
 PyJWT==2.9.0

@@ -145,21 +145,18 @@ AUTH_USER_MODEL = "users.User"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-PUBLIC_BASE_DIR = "home/eduzonel/public_html"
-
 
 STATIC_URL = "static/"
 MEDIA_URL = "media/"
 
-STATICFILES_DIRS = [BASE_DIR / "static"]
 
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 if DEBUG:
-    MEDIA_ROOT = BASE_DIR / "media"
+    STATICFILES_DIRS = [BASE_DIR / "static"]
 else:
-    MEDIA_ROOT = os.path.join(PUBLIC_BASE_DIR, "media")
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-STATIC_ROOT = os.path.join(PUBLIC_BASE_DIR, "static")
 
 # Click API settings
 
