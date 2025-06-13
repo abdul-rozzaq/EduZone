@@ -184,3 +184,10 @@ TEST_CARD_EXPIRY = env.list("TEST_CARD_EXPIRY", subcast=str)
 
 OTP_EMAIL = env.str("OTP_EMAIL", default="TEST")
 OTP_PASSWORD = env.str("OTP_PASSWORD", default="TEST")
+
+
+# Logger
+
+INSTALLED_APPS += ["drf_api_logger"]
+MIDDLEWARE += ["drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware"]
+DRF_API_LOGGER_DATABASE = True
