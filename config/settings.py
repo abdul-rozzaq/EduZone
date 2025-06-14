@@ -145,7 +145,7 @@ AUTH_USER_MODEL = "users.User"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-PUBLIC_BASE_DIR = "home/eduzonel/public_html"
+PUBLIC_BASE_DIR = "/home/eduzonel/public_html"
 
 
 STATIC_URL = "static/"
