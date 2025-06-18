@@ -3,6 +3,8 @@ from pathlib import Path
 from environs import Env
 from datetime import timedelta
 
+import dj_database_url
+
 env = Env()
 env.read_env()
 
@@ -107,12 +109,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+DATABASES = {"default": dj_database_url.parse(env.str("DATABASE_URL"))}
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -176,10 +173,6 @@ CLICK_MERCHANT_USER_ID = env.int("CLICK_MERCHANT_USER_ID")
 
 CLICK_ACCOUNT_MODEL = "payment.models.Payment"
 CLICK_AMOUNT_FIELD = "amount"
-
-
-TEST_CARD_NUMBERS = env.list("TEST_CARD_NUMBERS", subcast=str)
-TEST_CARD_EXPIRY = env.list("TEST_CARD_EXPIRY", subcast=str)
 
 
 OTP_EMAIL = env.str("OTP_EMAIL", default="TEST")
