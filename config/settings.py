@@ -8,12 +8,14 @@ env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000"]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 SECRET_KEY = env.str("SECRET_KEY")
 BOT_TOKEN = env.str("BOT_TOKEN")
 
 DEBUG = env.bool("DEBUG", default=False)
-
 ALLOWED_HOSTS = ["*"]
 
 
@@ -31,6 +33,7 @@ INSTALLED_APPS = [
     "nested_admin",
     "rest_framework_simplejwt.token_blacklist",
     "click_up",
+    "corsheaders",
     # Internal
     "users",
     "core",
@@ -39,6 +42,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -147,10 +151,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STATIC_URL = "/static/"
 
-if DEBUG:
-    STATICFILES_DIRS = [BASE_DIR / "static"]
-else:
-    STATIC_ROOT = BASE_DIR / "static"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "static_files"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -171,10 +173,6 @@ CLICK_MERCHANT_USER_ID = env.int("CLICK_MERCHANT_USER_ID")
 
 CLICK_ACCOUNT_MODEL = "payment.models.Payment"
 CLICK_AMOUNT_FIELD = "amount"
-
-
-TEST_CARD_NUMBERS = env.list("TEST_CARD_NUMBERS", subcast=str)
-TEST_CARD_EXPIRY = env.list("TEST_CARD_EXPIRY", subcast=str)
 
 
 OTP_EMAIL = env.str("OTP_EMAIL", default="TEST")

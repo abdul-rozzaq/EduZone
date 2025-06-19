@@ -4,7 +4,9 @@ bleach==6.2.0
 certifi==2025.1.31
 charset-normalizer==3.4.1
 click-pkg==0.14
+dj-database-url==3.0.0
 Django==5.1.7
+django-cors-headers==4.7.0
 django-filter==25.1
 django-nested-admin==4.1.1
 djangorestframework==3.15.2
