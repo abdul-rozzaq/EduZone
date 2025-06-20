@@ -58,7 +58,7 @@ services:
     command: >
       "certbot certonly --webroot --webroot-path=/var/www/certbot
       --email rayyan.dev@mail.ru --agree-tos --no-eff-email
-      -d eduzonelc.com -d www.eduzonelc.com"
+      -d eduzonelc.uz -d www.eduzonelc.uz"
 
 volumes:
   postgres_data:
