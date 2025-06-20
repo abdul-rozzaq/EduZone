@@ -49,6 +49,17 @@ services:
       - ./media:/app/media
       - static_data:/app/static
 
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    entrypoint: /bin/sh -c
+    command: >
+      "certbot certonly --webroot --webroot-path=/var/www/certbot
+      --email rayyan.dev@mail.ru --agree-tos --no-eff-email
+      -d eduzonelc.com -d www.eduzonelc.com"
+
 volumes:
   postgres_data:
   static_data:
