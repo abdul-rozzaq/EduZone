@@ -17,6 +17,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 SECRET_KEY = env.str("SECRET_KEY")
 BOT_TOKEN = env.str("BOT_TOKEN")
 
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 DEBUG = env.bool("DEBUG", default=False)
 ALLOWED_HOSTS = ["*"]
 
