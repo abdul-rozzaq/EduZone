@@ -10,7 +10,7 @@ env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000"]
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000", "https://eduzonelc.uz", "http://185.191.141.251"]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
