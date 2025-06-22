@@ -9,7 +9,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Payment
-        fields = "__all__"
+        exclude = ["transaction_id"]
 
 
 class CreatePaymentSerializer(serializers.Serializer):

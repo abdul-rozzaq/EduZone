@@ -45,9 +45,9 @@ class Payment(models.Model):
         """To'lov muvaffaqiyatli amalga oshirilganmi?"""
         return self.success
 
-    def confirm(self):
+    def confirm(self, transaction_id):
         self.success = True
-        self.transaction_id = uuid.uuid4()
+        self.transaction_id = transaction_id
 
         self.save()
 

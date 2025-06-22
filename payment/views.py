@@ -1,20 +1,21 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import GenericViewSet, mixins
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 
 from payment.models import Payment, Promocode
-from payment.serializers import CheckPromocodeSerializer, CreatePaymentSerializer, PromocodeSerializer, VerifyPaymentSerializer
+from payment.serializers import CheckPromocodeSerializer, CreatePaymentSerializer, PaymentSerializer, PromocodeSerializer, VerifyPaymentSerializer
 from payment.payment_utils import create_card_token, verify_token, payment_with_token
 
 from click_up.views import ClickWebhook
 from click_up.typing.request import ClickShopApiRequest
 
 
-class PaymentViewSet(GenericViewSet):
+class PaymentViewSet(mixins.RetrieveModelMixin, GenericViewSet):
     queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
 
     def get_serializer_class(self):
         if self.action == "create_payment":
@@ -40,8 +41,13 @@ class PaymentViewSet(GenericViewSet):
         card_number = serializer.validated_data.get("card_number")
         card_expiry = serializer.validated_data.get("card_expiry")
         level = serializer.validated_data.get("level")
+        promocode = serializer.validated_data.get("promocode")
 
-        # status_code, response_body = 200, {"error_code": 0, "card_token": "1f14684a-7480-49c1-b635-2ef25f46f01d"}
+        if promocode:
+            amount = max(level.price - promocode.discount, 1000)
+        else:
+            amount = level.price
+
         status_code, response_body = create_card_token(card_number, card_expiry)
 
         card_token = response_body.get("card_token")
@@ -53,7 +59,7 @@ class PaymentViewSet(GenericViewSet):
         payment = Payment.objects.create(
             user=request.user,
             level=level,
-            amount=level.price,
+            amount=amount,
             token=card_token,
         )
 
@@ -87,9 +93,6 @@ class PaymentViewSet(GenericViewSet):
         if status_code != 200 or error_code != 0:
             return Response({"error": "To'lovni amalga oshirishda xatolik", "detail": response}, status=status.HTTP_400_BAD_REQUEST)
 
-        payment.confirm()
-        payment.create_purchase()
-
         return Response({"message": "To'lov tasdiqlandi"}, status=200)
 
     @action(methods=["POST"], detail=False, url_path="check-promocode")
@@ -117,7 +120,10 @@ class ClickWebhookAPIView(ClickWebhook):
         """
         successfully payment method process you can ovveride it
         """
-        print(f"payment successful params: {params}")
+        payment = Payment.objects.get(id=params.merchant_trans_id)
+
+        payment.confirm(params.click_trans_id)
+        payment.create_purchase()
 
     def cancelled_payment(self, params):
         """
