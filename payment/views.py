@@ -81,17 +81,17 @@ class PaymentViewSet(mixins.RetrieveModelMixin, GenericViewSet):
         error_code = response.get("error_code")
 
         if status_code != 200 or error_code != 0:
-            return Response({"error": "Tokenni tasdiqlashda xatolik", "detail": response}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Tokenni tasdiqlashda xatolik", "detail": response}, status=status.HTTP_200_OK)
 
         try:
             status_code, response = payment_with_token(payment.token, payment.level.price, payment_id=str(payment.id))
             error_code = response.get("error_code")
 
         except Exception as e:
-            return Response({"error": "To'lovni amalga oshirishda xatolik", "detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "To'lovni amalga oshirishda xatolik", "detail": str(e)}, status=status.HTTP_200_OK)
 
         if status_code != 200 or error_code != 0:
-            return Response({"error": "To'lovni amalga oshirishda xatolik", "detail": response}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "To'lovni amalga oshirishda xatolik", "detail": response}, status=status.HTTP_200_OK)
 
         return Response({"message": "To'lov tasdiqlandi"}, status=200)
 
